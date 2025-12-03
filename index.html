@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bảng giá vàng Hải Nghĩa</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* full màn hình TV */
+        }
+
+        .screen {
+            width: 1920px;
+            height: 1080px;
+            margin: 0 auto;
+            background: #000;
+            padding: 12px;
+        }
+
+        .board {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(#4a0000, #2a0000);
+            border: 6px solid #663300;
+            padding: 14px 20px 10px;
+            position: relative;
+            color: #ffeb3b;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        .board-header {
+            display: grid;
+            grid-template-columns: 190px auto 290px;
+            align-items: center;
+            column-gap: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #663300;
+        }
+
+        .logo {
+            cursor: pointer; /* logo = nút chỉnh sửa */
+        }
+
+        .logo img {
+            width: 170px;
+            height: auto;
+            display: block;
+        }
+
+        .title-block { text-align: center; }
+
+        .shop-name {
+            font-size: 56px;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-shadow: 0 0 14px #ffeb3b;
+        }
+
+        .mst {
+            margin-top: 6px;
+            font-size: 26px;
+            color: #ffe082;
+            font-weight: bold;
+        }
+
+        .contact-block {
+            justify-self: end;
+            text-align: left;
+            font-size: 26px;
+        }
+
+        .phone-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 6px;
+            color: #ffe082;
+        }
+
+        .phone-row img {
+            width: 34px;
+            height: 34px;
+            margin-left: 8px;
+        }
+
+        /* SUB HEADER */
+        .sub-header {
+            display: grid;
+            grid-template-columns: auto 480px;
+            align-items: center;
+            margin-top: 10px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #663300;
+        }
+
+        .gold-title {
+            text-align: center;
+            font-size: 44px;
+            font-weight: bold;
+            color: #ffff33;
+            text-shadow: 0 0 12px #ffff33;
+        }
+
+        .date-time {
+            text-align: right;
+            font-size: 26px;
+            color: #ffff99;
+            padding-right: 8px;
+        }
+
+        /* CONTENT */
+        .content-row {
+            display: grid;
+            grid-template-columns: 2.4fr 1.15fr;
+            column-gap: 16px;
+            margin-top: 10px;
+            flex: 1;
+            align-items: stretch;
+        }
+
+        .left-panel {
+            padding-right: 8px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .top-left-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .unit {
+            font-size: 22px;
+            color: #ffcc80;
+        }
+
+        /* BẢNG GIÁ CHÍNH */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 34px;
+            font-weight: bold;
+        }
+
+        th, td {
+            border: 1px solid #663300;
+            padding: 16px 8px;
+            text-align: center;
+        }
+
+        th {
+            background: #c40000;
+            color: #ffffff;
+        }
+
+        td {
+            background: #420000;
+            color: #ffeb3b;
+        }
+
+        .gold-type {
+            text-align: left;
+            padding-left: 22px;
+        }
+
+        .right-panel {
+            border-left: 2px solid #663300;
+            padding-left: 10px;
+            display: flex;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .chart-frame {
+            width: 100%;
+            border: 3px solid #663300;
+            padding: 6px;
+            background: #000;
+            cursor: pointer; /* click để đổi biểu đồ */
+        }
+
+        .chart-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* FOOTER + CHỮ CHẠY */
+        .footer {
+            border-top: 3px solid #663300;
+            padding-top: 8px;
+            font-size: 26px;
+            color: #ffff55;
+            letter-spacing: 3px;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-top: 6px;
+        }
+
+        .footer-inner {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 18s linear infinite;
+        }
+
+        @keyframes marquee {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* EDIT MODAL */
+        .edit-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .edit-modal.active { display: flex; }
+
+        .edit-box {
+            background: #330000;
+            border: 2px solid #ffeb3b;
+            padding: 18px 22px;
+            width: 820px;
+            max-width: 95%;
+            color: #ffeb3b;
+        }
+
+        .edit-box h3 {
+            margin: 0 0 10px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .edit-header-fields {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            column-gap: 12px;
+            row-gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .edit-header-fields .field {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .edit-header-fields label {
+            flex: 0 0 110px;
+            font-size: 14px;
+        }
+
+        .edit-header-fields input {
+            flex: 1;
+            background: #200;
+            border: 1px solid #996600;
+            color: #ffeb3b;
+            padding: 4px 5px;
+            font-size: 16px;
+        }
+
+        .edit-box table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 18px;
+        }
+
+        .edit-box th, .edit-box td {
+            border: 1px solid #663300;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .edit-box input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            background: #200;
+            border: 1px solid #996600;
+            color: #ffeb3b;
+            padding: 3px 4px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .edit-actions {
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .edit-btn {
+            background: #ffeb3b;
+            border: none;
+            padding: 6px 14px;
+            margin-left: 8px;
+            font-weight: bold;
+            color: #400000;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .edit-btn.cancel {
+            background: #b0bec5;
+            color: #000;
+        }
+
+        .edit-note {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #ffcc80;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="screen">
+    <div class="board">
+
+        <!-- HEADER -->
+        <div class="board-header">
+            <div class="logo" title="Nhấn vào đây để chỉnh sửa thông tin & giá">
+                <img src="assets/than-tai.png" alt="Thần Tài">
+            </div>
+
+            <div class="title-block">
+                <div class="shop-name" id="shop-name">VÀNG BẠC HUY HÒA</div>
+                <div class="mst" id="mst">MST: 2900328220</div>
+            </div>
+
+            <div class="contact-block">
+                <div class="phone-row">
+                    <span id="phone1">0979757699</span>
+                    <img src="assets/phone.png" alt="Phone">
+                </div>
+                <div class="phone-row">
+                    <span id="phone2">0979757699</span>
+                    <img src="assets/phone.png" alt="Phone">
+                </div>
+            </div>
+        </div>
+
+        <!-- SUB HEADER -->
+        <div class="sub-header">
+            <div class="gold-title">GIÁ VÀNG HÔM NAY</div>
+            <div class="date-time" id="datetime">
+                thứ ba, 2 tháng 12 năm 2025 | 11:11
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content-row">
+
+            <!-- LEFT: TABLE -->
+            <div class="left-panel">
+                <div class="top-left-row">
+                    <div class="unit">Đơn vị tính: Nghìn đồng / 1 chỉ</div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>LOẠI VÀNG</th>
+                            <th>MUA VÀO</th>
+                            <th>BÁN RA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gold-table-body">
+                        <!-- JS render -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- RIGHT: CHART -->
+            <div class="right-panel">
+                <div class="chart-frame" id="chart-frame" title="Nhấn để đổi hình biểu đồ">
+                    <img id="chart-image" src="assets/gold-chart.png" alt="Biểu đồ giá vàng">
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER – chữ chạy -->
+        <div class="footer">
+            <div class="footer-inner">
+                GIA CÔNG CHẾ TÁC VÀNG TA - VÀNG TÂY - BẠC *** QUÝ KHÁCH VUI LÒNG KIỂM TRA TIỀN TRƯỚC KHI RỜI CỬA HÀNG
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- INPUT ẨN ĐỂ UPLOAD HÌNH BIỂU ĐỒ -->
+<input type="file" id="chart-upload" accept="image/*" style="display:none">
+
+<!-- MODAL SỬA THÔNG TIN & GIÁ -->
+<div class="edit-modal" id="edit-modal">
+    <div class="edit-box">
+        <h3>Cập nhật thông tin & giá vàng</h3>
+
+        <!-- Thông tin cửa hàng -->
+        <div class="edit-header-fields">
+            <div class="field">
+                <label for="edit-shop-name">Tên cửa hàng:</label>
+                <input id="edit-shop-name" type="text">
+            </div>
+            <div class="field">
+                <label for="edit-mst">MST:</label>
+                <input id="edit-mst" type="text">
+            </div>
+            <div class="field">
+                <label for="edit-phone1">Điện thoại 1:</label>
+                <input id="edit-phone1" type="text">
+            </div>
+            <div class="field">
+                <label for="edit-phone2">Điện thoại 2:</label>
+                <input id="edit-phone2" type="text">
+            </div>
+        </div>
+
+        <!-- Bảng giá -->
+        <table>
+            <thead>
+                <tr>
+                    <th>LOẠI VÀNG</th>
+                    <th>MUA VÀO</th>
+                    <th>BÁN RA</th>
+                </tr>
+            </thead>
+            <tbody id="edit-table-body">
+                <!-- JS thêm input -->
+            </tbody>
+        </table>
+
+        <div class="edit-note">
+            Giá tính theo: nghìn đồng / 1 chỉ. Bạn gõ đúng định dạng bạn muốn hiển thị (ví dụ 14.250).
+        </div>
+
+        <div class="edit-actions">
+            <button class="edit-btn cancel" id="cancel-edit">Đóng</button>
+            <button class="edit-btn" id="save-prices">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<!-- JS: thời gian realtime + chỉnh sửa + đổi biểu đồ -->
+<script>
+    /* ====== NGÀY GIỜ REALTIME ====== */
+    function updateDateTime() {
+        const el = document.getElementById('datetime');
+        if (!el) return;
+
+        const now = new Date();
+        const weekdays = [
+            'Chủ nhật',
+            'Thứ hai',
+            'Thứ ba',
+            'Thứ tư',
+            'Thứ năm',
+            'Thứ sáu',
+            'Thứ bảy'
+        ];
+
+        const weekday = weekdays[now.getDay()];
+        const day = now.getDate();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+
+        el.textContent = `${weekday}, ${day} tháng ${month} năm ${year} | ${hh}:${mm}:${ss}`;
+    }
+
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+
+    /* ====== DỮ LIỆU MẶC ĐỊNH ====== */
+    const defaultPrices = [
+        { type: 'VÀNG 9999',        buy: '14.250', sell: '14.650' },
+        { type: 'VÀNG 999',         buy: '14.200', sell: '14.600' },
+        { type: 'VÀNG TRANG SỨC 99',buy: '14.100', sell: '14.550' },
+        { type: 'VÀNG TÂY 75%',     buy: '9.400',  sell: '11.400' },
+        { type: 'VÀNG TÂY 61%',     buy: '8.430',  sell: '9.430' },
+        { type: 'VÀNG TÂY 58.5%',   buy: '7.230',  sell: '8.230' },
+        { type: 'VÀNG TÂY 41.7%',   buy: '5.000',  sell: '6.150' },
+        { type: 'BẠC 90%',          buy: '130',    sell: '280' }
+    ];
+
+    const defaultHeader = {
+        shopName: 'VÀNG BẠC HẢI NGHĨA',
+        mst: '2900328319-001',
+        phone1: '0913 046 169',
+        phone2: '0984 6161 88'
+    };
+
+    /* ====== LOCALSTORAGE: GIÁ VÀNG ====== */
+    function loadPrices() {
+        try {
+            const saved = localStorage.getItem('goldPrices');
+            if (!saved) return defaultPrices;
+            const parsed = JSON.parse(saved);
+            if (!Array.isArray(parsed) || !parsed.length) return defaultPrices;
+            return parsed;
+        } catch (e) {
+            return defaultPrices;
+        }
+    }
+
+    function savePrices(prices) {
+        localStorage.setItem('goldPrices', JSON.stringify(prices));
+    }
+
+    /* ====== LOCALSTORAGE: HEADER ====== */
+    function loadHeader() {
+        try {
+            const saved = localStorage.getItem('headerInfo');
+            if (!saved) return defaultHeader;
+            const parsed = JSON.parse(saved);
+            return { ...defaultHeader, ...parsed };
+        } catch (e) {
+            return defaultHeader;
+        }
+    }
+
+    function saveHeader(h) {
+        localStorage.setItem('headerInfo', JSON.stringify(h));
+    }
+
+    let prices = loadPrices();
+    let headerInfo = loadHeader();
+
+    /* ====== RENDER HEADER ====== */
+    function renderHeader() {
+        document.getElementById('shop-name').textContent = headerInfo.shopName || defaultHeader.shopName;
+        document.getElementById('mst').textContent = 'MST: ' + (headerInfo.mst || defaultHeader.mst);
+        document.getElementById('phone1').textContent = headerInfo.phone1 || defaultHeader.phone1;
+        document.getElementById('phone2').textContent = headerInfo.phone2 || defaultHeader.phone2;
+    }
+
+    /* ====== RENDER BẢNG CHÍNH ====== */
+    function renderMainTable() {
+        const tbody = document.getElementById('gold-table-body');
+        tbody.innerHTML = '';
+        prices.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="gold-type">${item.type}</td>
+                <td>${item.buy}</td>
+                <td>${item.sell}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    /* ====== MỞ POPUP ====== */
+    function openEditModal() {
+        const modal = document.getElementById('edit-modal');
+        const tbody = document.getElementById('edit-table-body');
+        tbody.innerHTML = '';
+
+        // fill header fields
+        document.getElementById('edit-shop-name').value = headerInfo.shopName || '';
+        document.getElementById('edit-mst').value       = headerInfo.mst      || '';
+        document.getElementById('edit-phone1').value    = headerInfo.phone1   || '';
+        document.getElementById('edit-phone2').value    = headerInfo.phone2   || '';
+
+        // fill price rows
+        prices.forEach((item) => {
+            const tr = document.createElement('tr');
+
+            const safeType = item.type || '';
+            const safeBuy  = item.buy  || '';
+            const safeSell = item.sell || '';
+
+            tr.innerHTML = `
+                <td><input type="text" value="${safeType}"></td>
+                <td><input type="text" value="${safeBuy}"></td>
+                <td><input type="text" value="${safeSell}"></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        modal.classList.add('active');
+    }
+
+    function closeEditModal() {
+        document.getElementById('edit-modal').classList.remove('active');
+    }
+
+    /* ====== LƯU POPUP ====== */
+    function saveFromModal() {
+        const tbody = document.getElementById('edit-table-body');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        // header
+        const newHeader = {
+            shopName: document.getElementById('edit-shop-name').value.trim() || defaultHeader.shopName,
+            mst:      document.getElementById('edit-mst').value.trim()       || defaultHeader.mst,
+            phone1:   document.getElementById('edit-phone1').value.trim()    || defaultHeader.phone1,
+            phone2:   document.getElementById('edit-phone2').value.trim()    || defaultHeader.phone2
+        };
+        headerInfo = newHeader;
+        saveHeader(headerInfo);
+        renderHeader();
+
+        // prices
+        const newPrices = rows.map(row => {
+            const inputs = row.querySelectorAll('input');
+            return {
+                type: inputs[0].value.trim(),
+                buy:  inputs[1].value.trim(),
+                sell: inputs[2].value.trim()
+            };
+        });
+        prices = newPrices;
+        savePrices(prices);
+        renderMainTable();
+
+        closeEditModal();
+    }
+
+    // Logo Thần Tài = nút mở popup
+    document.querySelector('.logo').addEventListener('click', openEditModal);
+    document.getElementById('cancel-edit').addEventListener('click', closeEditModal);
+    document.getElementById('save-prices').addEventListener('click', saveFromModal);
+
+    renderHeader();
+    renderMainTable();
+
+    /* ====== ĐỔI HÌNH BIỂU ĐỒ ====== */
+    const chartFrame = document.getElementById('chart-frame');
+    const chartImage = document.getElementById('chart-image');
+    const chartUpload = document.getElementById('chart-upload');
+
+    const savedChart = localStorage.getItem('chartImage');
+    if (savedChart) {
+        chartImage.src = savedChart;
+    }
+
+    chartFrame.addEventListener('click', () => {
+        chartUpload.click();
+    });
+
+    chartUpload.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const dataUrl = ev.target.result;
+            chartImage.src = dataUrl;
+            try {
+                localStorage.setItem('chartImage', dataUrl);
+            } catch (err) {
+                console.warn('Không lưu được hình biểu đồ vào localStorage.', err);
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+</script>
+
+</body>
+</html>
